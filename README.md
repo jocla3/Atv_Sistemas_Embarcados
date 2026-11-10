@@ -15,7 +15,7 @@ Projeto do Grupo 3 da disciplina de Sistemas Embarcados da CESAR School. Nosso o
 
 Estamos no protótipo inicial para o check point de 17/11/2026. Temos um firmware de automação local, uma proposta de circuito, a configuração inicial de Mosquitto/Node-RED e um protótipo visual com dados simulados. O grupo informou a execução do firmware e está aprimorando os testes. A integração ESP32–MQTT–painel e os testes físicos documentados ainda estão pendentes.
 
-A publicação está dividida em quatro pacotes na seção **Releases**, para que cada integrante revise e faça os próprios commits. As pastas abaixo estarão completas na branch principal após a integração dos quatro pacotes. O roteiro está em [docs/CONTRIBUICOES.md](docs/CONTRIBUICOES.md).
+A publicação está dividida em quatro pacotes na pasta [`entregas`](entregas), para que cada integrante revise e faça os próprios commits. Os ZIPs estão prontos para download. As pastas abaixo estarão completas na branch principal após a integração dos quatro pacotes. O roteiro está em [docs/CONTRIBUICOES.md](docs/CONTRIBUICOES.md).
 
 ## Organização
 

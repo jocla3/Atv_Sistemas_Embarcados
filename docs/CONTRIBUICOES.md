@@ -9,7 +9,7 @@ Preparamos quatro entregas do mesmo estágio de protótipo inicial. Cada integra
 | Caio (@Caiosenas2101) | Circuito e testes físicos | 2 |
 | Rafael (@rafaelcf29) | Interface e documentação | 2 |
 
-Os ZIPs individuais estão na release `checkpoint-grupo3-v1`. Cada ZIP contém uma pasta `arquivos/` com a estrutura que deve ser copiada para a raiz do repositório, um manifesto e instruções específicas. O pacote completo serve para conferir a integração local. Para distribuir os commits, cada integrante deve copiar somente seu pacote individual.
+Os ZIPs individuais estão na pasta `entregas/` do repositório. Cada ZIP contém uma pasta `arquivos/` com a estrutura que deve ser copiada para a raiz do repositório, um manifesto e instruções específicas. O pacote completo serve para conferir a integração local. Para distribuir os commits, cada integrante deve copiar somente seu pacote individual.
 
 ## Como trabalhar juntos
 
