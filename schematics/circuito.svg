@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520">
+<rect width="1000" height="520" fill="#fff"/>
+<g font-family="Arial,sans-serif" fill="#173329"><text x="40" y="45" font-size="25">Grupo 3 · Circuito proposto</text><text x="40" y="78" font-size="16">ESP32 DevKit · LDR no GPIO34 · LED no GPIO23</text></g>
+<g stroke="#254c3c" stroke-width="3" fill="none">
+<path d="M100 165H210 M310 165H450V280 M450 165H580 M700 165H850V220"/>
+<rect x="210" y="143" width="100" height="44"/><rect x="580" y="143" width="120" height="44"/>
+<circle cx="450" cy="165" r="5" fill="#254c3c"/>
+<path d="M830 220H870 M836 228H864 M843 236H857"/>
+<path d="M100 365H240 M360 365H530 M650 365H850V420"/>
+<rect x="240" y="343" width="120" height="44"/><rect x="530" y="337" width="120" height="56"/>
+<path d="M830 420H870 M836 428H864 M843 436H857"/>
+</g>
+<g font-family="Arial,sans-serif" font-size="18" fill="#173329">
+<text x="65" y="137">3V3</text><text x="239" y="172">LDR</text><text x="602" y="172">10 kΩ</text><text x="785" y="270">GND</text>
+<text x="380" y="310">GPIO34 / D34</text><text x="45" y="335">GPIO23 / D23</text><text x="238" y="420">220 Ω ou 330 Ω</text><text x="570" y="372">LED</text><text x="496" y="320">Ânodo (+)</text><text x="626" y="320">Cátodo (−)</text><text x="785" y="470">GND</text>
+<text x="40" y="505" font-size="15">Alimentação do ESP32 por USB. GND comum. Conferir os resistores e afastar o LED do LDR.</text></g>
+</svg>
