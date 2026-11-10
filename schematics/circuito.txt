@@ -1,0 +1,6 @@
+Circuito proposto — validar valores dos resistores disponíveis.
+3V3 -- LDR --+-- resistor 10 kohm -- GND
+            +-- GPIO34 (D34)
+GPIO23 (D23) -- resistor 220 ou 330 ohm -- anodo LED
+Catodo LED -- GND
+Alimentação da placa via USB. LED afastado do LDR.
