@@ -1,0 +1,163 @@
+[
+  {
+    "id": "grupo3",
+    "type": "tab",
+    "label": "Grupo 3 — diagnóstico MQTT",
+    "disabled": false,
+    "info": "Fluxo inicial de diagnóstico; não é dashboard integrado."
+  },
+  {
+    "id": "broker-grupo3",
+    "type": "mqtt-broker",
+    "name": "Mosquitto local",
+    "broker": "mqtt",
+    "port": "1883",
+    "clientid": "grupo3-nodered",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true
+  },
+  {
+    "id": "entrada-telemetria",
+    "type": "mqtt in",
+    "z": "grupo3",
+    "name": "telemetria",
+    "topic": "grupo3/iluminacao/telemetria",
+    "qos": "0",
+    "datatype": "auto-detect",
+    "broker": "broker-grupo3",
+    "x": 180,
+    "y": 80,
+    "wires": [
+      [
+        "debug-grupo3"
+      ]
+    ]
+  },
+  {
+    "id": "entrada-status",
+    "type": "mqtt in",
+    "z": "grupo3",
+    "name": "status",
+    "topic": "grupo3/iluminacao/status",
+    "qos": "0",
+    "datatype": "auto-detect",
+    "broker": "broker-grupo3",
+    "x": 180,
+    "y": 140,
+    "wires": [
+      [
+        "debug-grupo3"
+      ]
+    ]
+  },
+  {
+    "id": "debug-grupo3",
+    "type": "debug",
+    "z": "grupo3",
+    "name": "Mensagens recebidas",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "complete": "true",
+    "x": 460,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "comando-automatico",
+    "type": "inject",
+    "z": "grupo3",
+    "name": "automatico",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "once": false,
+    "payload": "automatico",
+    "payloadType": "str",
+    "topic": "grupo3/iluminacao/comando",
+    "x": 180,
+    "y": 240,
+    "wires": [
+      [
+        "saida-comandos"
+      ]
+    ]
+  },
+  {
+    "id": "comando-ligada",
+    "type": "inject",
+    "z": "grupo3",
+    "name": "ligada",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "once": false,
+    "payload": "ligada",
+    "payloadType": "str",
+    "topic": "grupo3/iluminacao/comando",
+    "x": 180,
+    "y": 300,
+    "wires": [
+      [
+        "saida-comandos"
+      ]
+    ]
+  },
+  {
+    "id": "comando-desligada",
+    "type": "inject",
+    "z": "grupo3",
+    "name": "desligada",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "once": false,
+    "payload": "desligada",
+    "payloadType": "str",
+    "topic": "grupo3/iluminacao/comando",
+    "x": 180,
+    "y": 360,
+    "wires": [
+      [
+        "saida-comandos"
+      ]
+    ]
+  },
+  {
+    "id": "saida-comandos",
+    "type": "mqtt out",
+    "z": "grupo3",
+    "name": "Enviar comando",
+    "topic": "",
+    "qos": "0",
+    "retain": "false",
+    "broker": "broker-grupo3",
+    "x": 470,
+    "y": 300,
+    "wires": []
+  }
+]
