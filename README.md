@@ -1,70 +1,30 @@
 # Monitoramento e Iluminação Automática Inteligente
 
-Projeto do Grupo 3 da disciplina de Sistemas Embarcados da CESAR School. Nosso objetivo é usar um ESP32 para medir a luminosidade e acender a iluminação quando escurece. Estamos preparando o monitoramento e o controle manual por MQTT.
-
-## Equipe
+Projeto do Grupo 3 de Sistemas Embarcados da CESAR School. O ESP32 lê a luminosidade pelo LDR, controla um LED e envia o estado para um painel web via MQTT. O painel permite manter o controle automático ou forçar a luz ligada ou desligada.
 
 | Integrante | GitHub | Responsabilidade |
 | --- | --- | --- |
-| João Cláudio Cavalcanti Beltrão Filho | [jocla3](https://github.com/jocla3) | Firmware, integração e representação do grupo |
+| João Cláudio Cavalcanti Beltrão Filho | [jocla3](https://github.com/jocla3) | Firmware, integração e representação |
 | Raul Vila Nova | [raulvnc](https://github.com/raulvnc) | Broker MQTT, back-end e comunicação |
 | Caio Sena | [Caiosenas2101](https://github.com/Caiosenas2101) | Circuito, sensores e testes de hardware |
 | Rafael Fernandes | [rafaelcf29](https://github.com/rafaelcf29) | Interface, documentação e apresentação |
 
-## Estágio do projeto
+## Executar
 
-Estamos no protótipo inicial para o check point de 17/11/2026. Temos um firmware de automação local, uma proposta de circuito, a configuração inicial de Mosquitto/Node-RED e um protótipo visual com dados simulados. O grupo informou a execução do firmware e está aprimorando os testes. A integração ESP32–MQTT–painel e os testes físicos documentados ainda estão pendentes.
+1. Monte o circuito do [esquemático](schematics/README.md). A junção do LDR com o resistor de 10 kΩ vai ao GPIO34. O GPIO23 aciona o LED por um resistor de 220 Ω ou 330 Ω.
+2. Na pasta `applications/`, rode `docker compose up -d`. O Node-RED carrega o fluxo automaticamente.
+3. Configure o Wi-Fi e o endereço do broker no [firmware](esp32-esp8266/README.md). Grave o sketch no ESP32 e conecte a placa à mesma rede do computador.
+4. Abra [o painel](http://localhost:1880/painel/) no computador que executa o Docker. Quando o ESP32 ficar online, cubra e ilumine o LDR. Em seguida, teste os três modos pelo painel.
 
-A publicação está dividida em quatro pacotes na pasta [`entregas`](entregas), para que cada integrante revise e faça os próprios commits. Os ZIPs estão prontos para download. As pastas abaixo estarão completas na branch principal após a integração dos quatro pacotes. O roteiro está em [docs/CONTRIBUICOES.md](docs/CONTRIBUICOES.md).
+O broker usa a porta 1883 e aceita conexões anônimas para a bancada. Use uma rede local confiável. O painel e o editor do Node-RED ficam disponíveis no computador que executa o Docker.
 
-## Organização
+## Demonstração sem a placa
 
-```text
-esp32-esp8266/   Firmware e instruções de gravação
-schematics/     Ligações e desenho do circuito
-docs/           Arquitetura, relatório e roteiros de testes
-applications/   Docker, broker MQTT e protótipo da interface
-```
+O [roteiro de demonstração](applications/README.md#demonstração-sem-o-esp32) mostra como repetir o fluxo com um cliente MQTT de teste, inclusive se o Colima apresentar problemas de acesso ao painel.
 
-## Montagem e firmware
+## Documentação
 
-Utilizamos um ESP32 DevKit, LDR, LED, resistor de 10 kΩ para o divisor do sensor, resistor de 220 Ω ou 330 Ω para o LED, protoboard e jumpers. Os valores dos resistores devem ser conferidos na montagem.
-
-O LDR é ligado entre 3V3 e a junção de leitura; a junção vai ao GPIO34 e ao resistor de 10 kΩ, que segue até GND. O GPIO23 aciona o LED através do resistor limitador. Alimente a placa por USB.
-
-Após integrar o pacote de João, abra `esp32-esp8266/iluminacao/iluminacao.ino` no Arduino IDE com o pacote de placas ESP32 da Espressif, selecione **ESP32 Dev Module**, escolha a porta e grave. Use o monitor serial a **115200 baud**. Consulte as instruções da pasta do firmware para calibrar os limites.
-
-## Serviços locais
-
-Com Docker e Docker Compose disponíveis e após integrar o pacote de Raul, execute a partir da raiz:
-
-```sh
-cd applications
-docker compose config --quiet
-docker compose up -d
-docker compose ps
-```
-
-O editor do Node-RED estará em http://localhost:1880. Importe o arquivo `applications/node-red/flows.json` e clique em Deploy. Ele contém um fluxo inicial de diagnóstico MQTT, com recepção de telemetria e envio manual de comandos. O broker fica na porta 1883. Dentro do Node-RED, o endereço é `mqtt`; no futuro firmware MQTT, use o IP do computador na rede local.
-
-O broker de bancada permite conexões sem senha. Utilize uma rede local confiável e configure autenticação antes de expor o serviço em redes compartilhadas. Para parar os serviços, use `docker compose down`.
-
-## Protótipo visual
-
-Após integrar o pacote de Rafael, abra `applications/frontend/index.html` no navegador. A interface identifica os dados como simulados e permite demonstrar os modos automático e manual. Os botões ainda não enviam comandos ao ESP32.
-
-## Comunicação planejada
-
-| Tópico | Origem | Destino |
-| --- | --- | --- |
-| `grupo3/iluminacao/telemetria` | ESP32 | Node-RED |
-| `grupo3/iluminacao/comando` | Node-RED | ESP32 |
-| `grupo3/iluminacao/status` | ESP32 e broker | Node-RED |
-
-O controle automático deve continuar localmente mesmo sem rede. Na integração futura, o modo manual deve permanecer até a seleção de Automático e o painel deve mostrar o estado confirmado pelo dispositivo.
-
-## Verificação e próximos passos
-
-Cada área inclui um roteiro de testes. Registre data, responsável, ambiente, resultado e evidência ao executar cada teste. Os exemplos e as simulações não substituem a validação na placa.
-
-Precisamos calibrar o LDR, fotografar o circuito, implementar MQTT no firmware, integrar o painel e registrar os testes de reconexão e controle manual. O histórico nesta versão do protótipo é mantido somente na memória do navegador.
+- [Arquitetura](docs/ARQUITETURA.md) e [contrato MQTT](docs/PROTOCOLO_MQTT.md)
+- [Serviços](applications/README.md), [firmware](esp32-esp8266/README.md) e [painel](applications/frontend/README.md)
+- Roteiros de testes de [hardware](docs/testes/hardware.md), [firmware](docs/testes/firmware.md), [MQTT](docs/testes/mqtt.md) e [interface](docs/testes/interface.md)
+- [Contribuições do checkpoint](docs/CONTRIBUICOES.md) e [relatório](docs/Relatorio_CheckPoint_Grupo_3.docx)

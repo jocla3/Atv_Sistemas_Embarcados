@@ -2,16 +2,18 @@
 
 Responsável — Raul (@raulvnc).
 
-| Teste | Resultado esperado | Situação |
-| --- | --- | --- |
-| Validar Compose | Configuração aceita sem erros | Passou em 2026-11-11 (`docker compose config --quiet`) |
-| Iniciar serviços | Mosquitto e Node-RED ativos | Passou em 2026-11-11 com `nodered/node-red:4.1`; a tag `4` não existe no Docker Hub |
-| Publicação manual | JSON recebido pelo assinante | Passou em 2026-11-11 (mensagem de teste) |
-| Importar fluxo | Telemetria aparece no Debug | Passou em 2026-11-11; telemetria e status apareceram no Debug |
-| Enviar comando | Assinante recebe automatico/ligada/desligada | Passou em 2026-11-11; os três comandos foram recebidos |
-| Integrar ESP32 | Telemetria vem da placa e comando altera saída | Pendente de implementação |
-| Reconectar placa | Recupera conexão sem repetir comando antigo | Pendente de implementação |
+Em `applications/`, rode `docker compose up -d` e use os comandos do [guia dos serviços](../../applications/README.md).
 
-Use os comandos do README de `applications/`. Para testar comandos, assine `grupo3/iluminacao/comando` e use um botão Inject no Node-RED. Registre data, responsável, mensagem, resultado e logs. Mensagens manuais devem ser identificadas como teste.
+| Teste | Resultado esperado |
+| --- | --- |
+| Carregar o fluxo e iniciar os serviços | Mosquitto e Node-RED ativos, com o painel servido em `/painel/` |
+| Conectar a placa | O broker recebe status online e telemetria com leitura, modo e estado do LED |
+| Testar os três comandos pelo painel | O ESP32 aplica o modo e devolve a confirmação com o identificador do comando |
+| Desconectar o Wi-Fi do ESP32 | O painel deixa de aceitar comandos e o controle local continua |
+| Reconectar o ESP32 | O painel recebe a leitura atual e nenhum comando antigo é reaplicado |
+| Reiniciar a placa em modo manual | A placa volta no modo automático |
+| Desligar o broker | O controle local continua e a placa volta a publicar quando o broker retornar |
 
-Execução de 2026-11-11 — Raul (@raulvnc). Testes em bancada com Docker Desktop e mensagens manuais identificadas com `"teste":true`. O fluxo foi implantado pela API do Node-RED e os botões Inject foram acionados. Nenhum teste envolveu a placa.
+Registre as mensagens e os logs. Identifique os resultados obtidos com cliente MQTT de teste e os obtidos com a placa física.
+
+Em 12/11/2026, um cliente MQTT de teste confirmou telemetria, envio de comando e retorno da confirmação no Docker Compose. Os testes com o ESP32 físico devem ser registrados na bancada.

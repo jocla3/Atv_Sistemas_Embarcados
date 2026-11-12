@@ -1,16 +1,22 @@
+name: grupo3-iluminacao
+
 services:
   mqtt:
     image: eclipse-mosquitto:2
     ports:
-      - "1883:1883"
+      - "${GRUPO3_MQTT_BIND:-0.0.0.0}:${GRUPO3_MQTT_PORT:-1883}:1883"
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
   node-red:
     image: nodered/node-red:4.1
     ports:
-      - "127.0.0.1:1880:1880"
+      - "127.0.0.1:${GRUPO3_HTTP_PORT:-1880}:1880"
+    entrypoint: ["node", "/usr/src/node-red/node_modules/node-red/red.js"]
+    command: ["--userDir", "/data", "--settings", "/opt/grupo3/settings.js", "/opt/grupo3/flows.json"]
     volumes:
       - node_red_data:/data
+      - ./node-red:/opt/grupo3:ro
+      - ./frontend:/opt/grupo3-frontend:ro
     depends_on:
       - mqtt
 volumes:

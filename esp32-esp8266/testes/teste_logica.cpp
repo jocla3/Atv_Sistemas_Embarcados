@@ -20,5 +20,13 @@ int main() {
     verificarLeitura(1600, LOW);
     verificarLeitura(0, HIGH);
     verificarLeitura(4095, LOW);
-    std::cout << "Limites e manutenção do estado verificados.\n";
+    modoAtual = Modo::Ligada;
+    verificarLeitura(4095, HIGH);
+    verificarLeitura(4095, HIGH);
+    modoAtual = Modo::Desligada;
+    verificarLeitura(0, LOW);
+    modoAtual = Modo::Automatico;
+    verificarLeitura(0, HIGH);
+    verificarLeitura(4095, LOW);
+    std::cout << "Limites, histerese e modos de operação verificados.\n";
 }

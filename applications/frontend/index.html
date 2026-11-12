@@ -1,25 +1,26 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Grupo 3 · Monitoramento e Iluminação</title>
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
 </head>
 <body>
 <main>
-<header><p class="eyebrow">CESAR School · Sistemas Embarcados · Grupo 3</p><h1>Monitoramento e iluminação</h1><p>Protótipo interativo com dados simulados. Integração MQTT em desenvolvimento.</p></header>
-<section class="cards" aria-label="Estado simulado">
-<article><h2>Leitura do LDR</h2><p id="reading" class="value">2200</p><span>Leitura bruta de 0 a 4095</span></article>
-<article><h2>Iluminação</h2><p id="light" class="value" aria-live="polite">Desligada</p><span>LED simulado</span></article>
-<article><h2>Modo</h2><p id="mode" class="value">Automático</p><span id="connection">Conexão real pendente</span></article>
+<header><p class="eyebrow">CESAR School · Sistemas Embarcados · Grupo 3</p><h1>Monitoramento e iluminação</h1></header>
+<section class="cards" aria-label="Estado do ESP32">
+<article><h2>Leitura do LDR</h2><p id="reading" class="value">—</p><span>Leitura bruta de 0 a 4095</span></article>
+<article><h2>Iluminação</h2><p id="light" class="value" aria-live="polite">—</p><span id="light-source">Estado informado pelo ESP32</span></article>
+<article><h2>Modo</h2><p id="mode" class="value">—</p><span id="connection" role="status">Conectando…</span></article>
 </section>
 <section class="panel"><h2>Controle da iluminação</h2><div class="buttons" role="group" aria-label="Modo de operação">
-<button data-mode="automatico" aria-pressed="true">Automático</button>
-<button data-mode="ligada" aria-pressed="false">Forçar ligada</button>
-<button data-mode="desligada" aria-pressed="false">Forçar desligada</button>
-</div><label for="sensor">Simular luminosidade do ambiente</label><input id="sensor" type="range" min="0" max="4095" value="2200"><p>Escuro ← → Claro. No automático, liga até 1500 e desliga a partir de 1800.</p></section>
-<section class="panel"><h2>Histórico da simulação</h2><div class="table-wrap"><table><thead><tr><th>Horário</th><th>LDR</th><th>Iluminação</th><th>Modo</th></tr></thead><tbody id="history"></tbody></table></div></section>
-<footer>Protótipo para validação da interface · O histórico é apagado ao recarregar.</footer>
+<button data-mode="automatico" aria-pressed="false" disabled>Automático</button>
+<button data-mode="ligada" aria-pressed="false" disabled>Forçar ligada</button>
+<button data-mode="desligada" aria-pressed="false" disabled>Forçar desligada</button>
+</div><p id="command-status" role="status"></p></section>
+<section class="panel"><h2>Histórico de leituras</h2><div class="table-wrap"><table><thead><tr><th>Horário</th><th>LDR</th><th>Iluminação</th><th>Modo</th></tr></thead><tbody id="history"></tbody></table></div></section>
 </main>
-</body></html>
+</body>
+</html>
