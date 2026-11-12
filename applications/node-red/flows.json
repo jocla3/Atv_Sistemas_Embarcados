@@ -2,9 +2,9 @@
   {
     "id": "grupo3",
     "type": "tab",
-    "label": "Grupo 3 — diagnóstico MQTT",
+    "label": "Grupo 3 — iluminação",
     "disabled": false,
-    "info": "Fluxo inicial de diagnóstico; não é dashboard integrado."
+    "info": "Diagnóstico MQTT e API do painel de iluminação."
   },
   {
     "id": "broker-grupo3",
@@ -26,13 +26,14 @@
     "name": "telemetria",
     "topic": "grupo3/iluminacao/telemetria",
     "qos": "0",
-    "datatype": "auto-detect",
+    "datatype": "json",
     "broker": "broker-grupo3",
     "x": 180,
     "y": 80,
     "wires": [
       [
-        "debug-grupo3"
+        "debug-grupo3",
+        "registrar-estado"
       ]
     ]
   },
@@ -49,7 +50,8 @@
     "y": 140,
     "wires": [
       [
-        "debug-grupo3"
+        "debug-grupo3",
+        "registrar-estado"
       ]
     ]
   },
@@ -158,6 +160,138 @@
     "broker": "broker-grupo3",
     "x": 470,
     "y": 300,
+    "wires": []
+  },
+  {
+    "id": "registrar-estado",
+    "type": "function",
+    "z": "grupo3",
+    "name": "Registrar estado da placa",
+    "func": "const prefixo = 'grupo3/iluminacao/';\nif (msg.topic === prefixo + 'status') {\n    if (msg.payload === 'online' || msg.payload === 'offline') {\n        flow.set('placaOnline', msg.payload === 'online');\n        if (msg.payload === 'offline') flow.set('telemetriaAtual', null);\n    }\n    return;\n}\n\nconst dado = msg.payload;\nconst modos = ['automatico', 'ligada', 'desligada'];\nif (!dado || !Number.isInteger(dado.ldr) || dado.ldr < 0 || dado.ldr > 4095 ||\n    typeof dado.luz !== 'boolean' || !modos.includes(dado.modo)) {\n    return;\n}\n\nconst simulado = dado.simulado === true;\nconst estado = { ldr: dado.ldr, luz: dado.luz, modo: dado.modo, simulado, recebidoEm: Date.now() };\nflow.set('telemetriaAtual', estado);\n\nconst historico = flow.get('historico') || [];\nconst anterior = historico[0];\nif (!anterior || anterior.ldr !== estado.ldr || anterior.luz !== estado.luz || anterior.modo !== estado.modo || anterior.simulado !== simulado) {\n    flow.set('historico', [estado, ...historico].slice(0, 20));\n}\n\nif (typeof dado.confirmacao === 'string' && /^[0-9a-f]{1,32}$/.test(dado.confirmacao)) {\n    const confirmacoes = flow.get('confirmacoes') || [];\n    flow.set('confirmacoes', [{ id: dado.confirmacao, modo: estado.modo, simulado }, ...confirmacoes].slice(0, 20));\n}",
+    "outputs": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 500,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "conexao-mqtt",
+    "type": "status",
+    "z": "grupo3",
+    "name": "Conexão com o broker",
+    "scope": [
+      "entrada-status"
+    ],
+    "x": 190,
+    "y": 440,
+    "wires": [
+      [
+        "registrar-conexao"
+      ]
+    ]
+  },
+  {
+    "id": "registrar-conexao",
+    "type": "function",
+    "z": "grupo3",
+    "name": "Registrar conexão MQTT",
+    "func": "const conectado = msg.status.fill === 'green';\nflow.set('brokerOnline', conectado);\nif (!conectado) {\n    flow.set('placaOnline', false);\n    flow.set('telemetriaAtual', null);\n}",
+    "outputs": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 470,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "ler-estado",
+    "type": "http in",
+    "z": "grupo3",
+    "name": "Estado do ESP32",
+    "url": "/api/estado",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 520,
+    "wires": [
+      [
+        "responder-estado"
+      ]
+    ]
+  },
+  {
+    "id": "responder-estado",
+    "type": "function",
+    "z": "grupo3",
+    "name": "Montar estado do painel",
+    "func": "const estado = flow.get('telemetriaAtual');\nconst brokerOnline = flow.get('brokerOnline') === true;\nconst placaOnline = flow.get('placaOnline') === true;\nmsg.headers = { 'Cache-Control': 'no-store' };\nmsg.payload = {\n    conexao: !brokerOnline || !placaOnline ? 'offline' :\n        !estado || Date.now() - estado.recebidoEm > 7000 ? 'desatualizada' : 'online',\n    estado: estado || null,\n    historico: flow.get('historico') || [],\n    confirmacoes: flow.get('confirmacoes') || []\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 460,
+    "y": 520,
+    "wires": [
+      [
+        "resposta-api"
+      ]
+    ]
+  },
+  {
+    "id": "enviar-modo",
+    "type": "http in",
+    "z": "grupo3",
+    "name": "Comando do painel",
+    "url": "/api/comando",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 190,
+    "y": 600,
+    "wires": [
+      [
+        "validar-modo"
+      ]
+    ]
+  },
+  {
+    "id": "validar-modo",
+    "type": "function",
+    "z": "grupo3",
+    "name": "Validar comando e publicar",
+    "func": "msg.headers = { 'Cache-Control': 'no-store' };\nconst tipo = msg.req.headers['content-type']?.split(';')[0].trim().toLowerCase();\nif (tipo !== 'application/json') {\n    msg.statusCode = 415;\n    msg.payload = { erro: 'Envie um comando em JSON.' };\n    return [null, msg];\n}\n\nconst modo = msg.payload?.modo;\nif (!['automatico', 'ligada', 'desligada'].includes(modo)) {\n    msg.statusCode = 400;\n    msg.payload = { erro: 'Modo inválido.' };\n    return [null, msg];\n}\n\nconst estado = flow.get('telemetriaAtual');\nif (!flow.get('brokerOnline') || !flow.get('placaOnline') || !estado ||\n    Date.now() - estado.recebidoEm > 7000) {\n    msg.statusCode = 503;\n    msg.payload = { erro: 'ESP32 indisponível. Aguarde a reconexão.' };\n    return [null, msg];\n}\n\nconst id = msg._msgid;\nmsg.statusCode = 202;\nmsg.payload = { id };\nreturn [{\n    topic: 'grupo3/iluminacao/comando',\n    payload: JSON.stringify({ modo, id })\n}, msg];",
+    "outputs": 2,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 480,
+    "y": 600,
+    "wires": [
+      [
+        "saida-comandos"
+      ],
+      [
+        "resposta-api"
+      ]
+    ]
+  },
+  {
+    "id": "resposta-api",
+    "type": "http response",
+    "z": "grupo3",
+    "name": "Responder ao painel",
+    "statusCode": "",
+    "headers": {},
+    "x": 750,
+    "y": 540,
     "wires": []
   }
 ]

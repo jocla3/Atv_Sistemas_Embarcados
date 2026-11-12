@@ -7,3 +7,5 @@ secrets.h
 node_modules/
 __pycache__/
 entregas/
+
+/esp32-esp8266/iluminacao/configuracao.h
